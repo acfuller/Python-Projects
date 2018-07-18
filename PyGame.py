@@ -6,6 +6,11 @@ import shelve
 
 shelfFile = shelve.open('myToonData')
 login = {}
+shelfFile['saveFile'] = login
+#if login in shelfFile['myToonData'] == False:
+#    shelfFile['saveFile'] = login
+#elif login in shelfFile['myToonData'] == True:
+#    login = shelfFile['login[saveFile]']
 login = shelfFile['login[saveFile]']
 
 
@@ -67,6 +72,74 @@ def lvlup():
     " Defense: " + str(login[saveFile]['defend']) + " Speed: " +
     str(login[saveFile]['spd']) + "!")
     shelfFile['login[saveFile]'] = login
+
+class enemy:
+
+    def __init__(self, name, hp, atk, defend, spd, exp):
+        self.name = name
+        self.hp = hp
+        self.atk = atk
+        self.defend = defend
+        self.spd = spd
+        self.exp = exp
+
+goblin = enemy('goblin', 75, 3, 0, 2, 10)
+orc = enemy('orc',105, 6, 3, 1, 20)
+bandit = enemy('bandit', 100, 4, 0, 1, 15)
+bear = enemy('bear', 200, 10, 5, 2, 30)
+dragon = enemy('dragon', 1000, 100, 50, 25, 50)
+magical_shrine = enemy('magical shrine', 0, 0, 0, 0, 20)
+
+
+enemyList = [goblin, orc, bandit, bear, dragon, magical_shrine]
+
+def encounter():
+    global login
+    global enemyList
+    currentEnemy = enemyList[random.randint(0, 5)]
+    print("You have encountered a " + currentEnemy.name + "!")
+    while True:
+        if currentEnemy.name == 'dragon':
+            print("A mighty dragon has appeared and destroyed everything! \n"
+            + "The entire kingdom is now in ruins. \n"
+            + "You have died.")
+            break
+        elif currentEnemy.name == 'magical shrine':
+            print("You have encountered a magical shrine!")
+            login[saveFile]['CharExp'] = login[saveFile]['CharExp'] + 20
+            if login[saveFile]['CharExp'] >= 50:
+                lvlup()
+                login[saveFile]['CharExp'] = login[saveFile]['CharExp'] % 50
+            shelfFile['login[saveFile]'] = login
+            break
+        elif currentEnemy.hp <= 0:
+            print("You have defeated the " + currentEnemy.name + '!')
+            login = shelfFile['login[saveFile]']
+            login[saveFile]['CharExp'] = login[saveFile]['CharExp'] + currentEnemy.exp
+            if login[saveFile]['CharExp'] >= 50:
+                lvlup()
+                login[saveFile]['CharExp'] = login[saveFile]['CharExp'] % 50
+            shelfFile['login[saveFile]'] = login
+            break
+        elif login[saveFile]['hp'] <= 0:
+            print("You have died!")
+            login = shelfFile['login[saveFile]']
+            break
+        else:
+            currentEnemy.hp = currentEnemy.hp - (login[saveFile]['atk'] * login[saveFile]['spd'])
+            login[saveFile]['hp'] = login[saveFile]['hp'] - (currentEnemy.atk * currentEnemy.spd)
+            continue
+
+while True:
+    print("Would you like to go into the wild?\n(Yes/No)")
+    toonAction = input()
+    if toonAction.lower() == 'yes':
+        encounter()
+    else:
+        print("Have a good rest and come back soon!"
+        + "\nWe can spare much time!")
+        login = shelfFile['login[saveFile]']
+        quit()
 
 
 

@@ -1,2 +1,2 @@
-'login[toonData]', (0, 131)
-'login[saveFile]', (512, 372)
+'saveFile', (0, 6)
+'login[saveFile]', (512, 127)
